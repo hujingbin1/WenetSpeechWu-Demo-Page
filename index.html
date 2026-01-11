@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="generator" content="Hugo 0.88.1" />
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link href="https://fonts.googleapis.com/css?family=Roboto:300,400,700" rel="stylesheet" type="text/css">
+	<link rel="stylesheet" href=""https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/github.min.css">
+	<link rel="stylesheet" href="css/custom.css">
+	<link rel="stylesheet" href="css/normalize.css">
+
+	<title>VoiceSculptor</title>
+	<link href="css/bootstrap.min.css" rel="stylesheet">
+
+</head>
+
+
+<body data-new-gr-c-s-check-loaded="14.1091.0" data-gr-ext-installed="">
+
+<div class="container" >
+<header role="banner">
+</header>
+<main role="main">
+<article itemscope itemtype="https://schema.org/BlogPosting">
+
+<div class="container pt-5 mt-5 shadow-lg p-5 mb-5 bg-white rounded">
+	<div class="text-center">
+	<h2>VoiceSculptor: </h2>
+      <h3>Your Voice, Designed By You</h3>
+		<p style="text-align: center;">
+			<img src="pics/logo (1).png" height="250" width="250">
+		</p>
+        <p>Jingbin Hu<sup>1</sup>, Huakang Chen<sup>1</sup>, Linhan Ma<sup>1</sup>, Dake Guo<sup>1</sup>, Qirui Zhan<sup>1</sup>, Wenhao Li<sup>1</sup>, Haoyu Zhang<sup>1</sup>,
+		<br>Kangxiang Xia<sup>1</sup>, Ziyu Zhang<sup>1</sup>, Wenjie Tian<sup>1</sup>, Chengyou Wang<sup>1</sup>, Jinrui Liang<sup>1</sup>, Shuhan Guo<sup>1</sup>, Zihang Yang<sup>1</sup>, <br>Bengu Wu<sup>2</sup>,
+		Binbin Zhang<sup>4</sup>, Pengcheng Zhu<sup>1 4</sup>, Pengyuan Xie<sup>3</sup>, Chuan Xie<sup>3</sup>, Qiang Zhang<sup>3</sup>, Jie Liu<sup>3</sup>, Lei Xie<sup>1&dagger;</sup>
+        <p><sup>1</sup>Audio, Speech and Language Processing Group (ASLP@NPU), School of Computer Science, Northwestern Polytechnical University<br>
+		<p><sup>2</sup>Yutu Zhineng<br>
+		<p><sup>3</sup>Shanghai Lingguang Zhaxian Technology <br>
+		<p><sup>4</sup>WeNet Open Source Community<br>
+        <p>
+		    <a href="https://github.com/ASLP-lab/VoiceSculptor">📄 Technical Report (coming soon)</a> |
+            <a href="https://huggingface.co/ASLP-lab/VoiceSculptor-VD">🤗 Hugging Face</a> |
+            <a href="https://huggingface.co/spaces/ASLP-lab/VoiceSculptor">🧪 Hugging Face Demo</a> |
+            <a href="https://github.com/ASLP-lab/VoiceSculptor">💻 GitHub Repo</a>
+        </p>
+	</div>
+	<p><b>Abstract</b> 
+		<br>
+		VoiceSculptor is composed of two core components: <b>voice design</b> and <b>voice clone</b>.
+		The voice design module enables the generation of timbre from natural language descriptions and supports command refinement through Retrieval-Augmented Generation (RAG). It also provides fine-grained control over voice attributes, including gender, age, speaking rate, fundamental frequency, volume, and emotional expression.
+		The synthesized audio produced by the voice design module can be used as a prompt waveform for the CosyVoice2 voice cloning model, enabling timbre cloning and downstream speech synthesis tasks.
+	</p>
+
+	<p>
+	<b>Contents</b>
+      <ul>
+        <li><a href="#model-overview">System Overview</a></li>
+		<li><a href="#Demo Video">Demo Video</a></li>
+        <li><a href="#Instruct TTS Eval">Instruct TTS Eval</a></li>
+		<li><a href="#Role Play">Role Play</a></li>
+        <li><a href="#Voice Diversity">Voice Diversity</a></li>
+        <li><a href="#Fine-grained Voice Control">Fine-grained Control of Prosodic Attributes</a></li>
+		<li><a href="#Emotion Control">Emotion Control</a></li>
+		<li><a href="#Retrieval-Augmented Generation">Retrieval-Augmented Generation</a></li>
+		<li><a href="#Voice Clone">Voice Clone</a></li>
+      </ul>
+	</p>
+
+	<p><b>This page is for research demonstration purposes only.</b></p>
+
+	
+</div>
+
+
+<div class="container pt-5 mt-5 shadow-lg p-5 mb-5 bg-white rounded">		
+	<h2 id="model-overview" style="text-align: center;">System Overview</h2>
+	<body>
+	<p style="text-align: center;">
+		<img src="pics/llasa3b.png" height="500" width="1000">
+	</p>
+	</body>
+		<p style="text-align: center;" >
+			<b>Figure 1.</b> An overview of our VoiceSculptor system.
+		</p>
+</div>
+
+<div class="container pt-5 mt-5 shadow-lg p-5 mb-5 bg-white rounded">
+	<h2 id="Demo Video" style="text-align: center;">Demo Video</h2>
+	<video controls width="100%" style="max-width:720px;margin:1rem auto;display:block;">
+	  <source src="media/demo_video.mov" type="video/mp4">
+	  您的浏览器不支持 video 标签。
+	</video>
+  </div>
+
+<title>Instruct TTS Eval</title>
+<style>
+	body {
+		font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+		margin: 0;
+		padding: 20px;
+		background: linear-gradient(135deg, #f5f7fa 0%, #e4e7f1 100%);
+		min-height: 100vh;
+	}
+	.container {
+		max-width: 1500px;
+		margin: 0 auto;
+		background: rgba(255, 255, 255, 0.9);
+		backdrop-filter: blur(12px);
+		padding: 36px;
+		border-radius: 22px;
+		box-shadow:
+			0 12px 40px rgba(31, 38, 135, 0.18),
+			0 2px 8px rgba(0, 0, 0, 0.06);
+		border: 2px solid rgba(255, 255, 255, 0.7);
+	}	
+	h1 {
+		text-align: center;
+		color: #2c3e50;
+		margin-bottom: 30px;
+		font-weight: 600;
+		font-size: 2.2rem;
+		letter-spacing: -0.5px;
+	}
+	table {
+		width: 100%;
+		border-collapse: separate;
+		border-spacing: 0;
+		margin: 24px 0;
+		background: white;
+		border-radius: 18px;
+		overflow: hidden;
+		box-shadow:
+			0 6px 18px rgba(0, 0, 0, 0.08),
+			0 1px 3px rgba(0, 0, 0, 0.04);
+		border: 1.5px solid #e5eaf2;
+	}
+	th, td {
+		padding: 18px 16px;
+		text-align: center;
+		border-bottom: 1.5px solid #e6ebf2; 
+	}
+	th {
+		background: linear-gradient(to bottom, #4a6fa5, #3a5a8a);
+		color: white;
+		font-weight: 600;
+		font-size: 1.05rem;
+		position: sticky;
+		top: 0;
+	}
+	tr:not(:last-child) td {
+		border-bottom: 1px solid #eef2f7;
+	}
+	tr:nth-child(even) {
+		background-color: #f8fafc;
+	}
+	tr:hover {
+		background-color: #f0f7ff;
+		transition: background-color 0.2s ease;
+	}
+	.model-name {
+		text-align: left;
+		font-weight: 600;
+		color: #2c3e50;
+		padding-left: 20px;
+	}
+	.highlight {
+		background-color: #e3f2fd !important;
+		position: relative;
+	}
+	.highlight::after {
+		content: "";
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		background: linear-gradient(135deg, rgba(66, 133, 244, 0.1) 0%, rgba(66, 133, 244, 0.05) 100%);
+		pointer-events: none;
+	}
+	.best-score {
+		background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+		font-weight: bold;
+		color: #2e7d32;
+	}
+	.note {
+		margin-top: 24px;
+		padding: 22px;
+		background: rgba(232, 245, 233, 0.75);
+		border-left: 6px solid #4caf50;
+		border-radius: 12px;
+		font-size: 0.96rem;
+		color: #2c3e50;
+		backdrop-filter: blur(6px);
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+	}
+	.note p {
+		margin: 8px 0;
+	}
+	.note strong {
+		color: #2e7d32;
+	}
+	.metric-header {
+		font-size: 0.9rem;
+		opacity: 0.9;
+	}
+	@media screen and (max-width: 768px) {
+		table {
+			font-size: 0.9rem;
+		}
+		th, td {
+			padding: 12px 8px;
+		}
+		.model-name {
+			padding-left: 12px;
+		}
+	}
+</style>
+<div class="container">
+	<h2 id="Instruct TTS Eval" style="text-align: center;">Instruct TTS Eval (ZH)</h2>
+	<table id="performanceTable">
+		<thead>
+			<tr>
+				<th style="text-align: left; padding-left: 20px;">model</th>
+				<th>APS <span class="metric-header">(%)</span></th>
+				<th>DSD <span class="metric-header">(%)</span></th>
+				<th>RP <span class="metric-header">(%)</span></th>
+				<th>AVG <span class="metric-header">(%)</span></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td class="model-name">Gemini 2.5-Flash*</td>
+				<td>88.2</td>
+				<td>90.9</td>
+				<td>77.3</td>
+				<td>85.4</td>
+			</tr>
+			<tr>
+				<td class="model-name">Gemini 2.5-Pro*</td>
+				<td>89.0</td>
+				<td>90.1</td>
+				<td>75.5</td>
+				<td>84.8</td>
+			</tr>
+			<tr>
+				<td class="model-name">GPT-4o-Mini-TTS*</td>
+				<td>54.9</td>
+				<td>52.3</td>
+				<td>46.0</td>
+				<td>51.1</td>
+			</tr>
+			<tr>
+				<td class="model-name">ElevenLabs*</td>
+				<td>42.8</td>
+				<td>50.9</td>
+				<td>59.1</td>
+				<td>50.9</td>
+			</tr>
+			<tr>
+				<td class="model-name">VoxInstruct</td>
+				<td>47.5</td>
+				<td>52.3</td>
+				<td>42.6</td>
+				<td>47.5</td>
+			</tr>
+			<tr>
+				<td class="model-name">MiMo-Audio-7B-Instruct</td>
+				<td>70.1</td>
+				<td>66.1</td>
+				<td>57.1</td>
+				<td>64.5</td>
+			</tr>
+			<tr class="highlight" style="font-weight: bold;">
+				<td class="model-name">VoiceSculptor</td>
+				<td>75.7</td>
+				<td>64.7</td>
+				<td>61.5</td>
+				<td>67.3</td>
+			</tr>
+		</tbody>
+	</table>
+	<div class="note">
+		<p><strong>Note：</strong></p>
+		<p>• Models marked with * are commercial models.</p>
+		<p>
+			InstructTTSEval — Huang, K., Tu, Q., Fan, L., Yang, C., Zhang, D., Li, S., Fei, Z., Cheng, Q., & Qiu, X. (2025). InstructTTSEval: Benchmarking Complex Natural-Language Instruction Following in Text-to-Speech Systems.
+			arXiv preprint arXiv:2506.16381.
+			<a href="https://arxiv.org/abs/2506.16381" target="_blank">arXiv</a>
+		</p>
+	</div>
+</div>
+
+<script>
+	function highlightBestScores() {
+		const table = document.getElementById('performanceTable');
+		const tbody = table.querySelector('tbody');
+		const rows = tbody.querySelectorAll('tr');
+		const numColumns = 4; // APS, DSD, RP, AVG
+		
+		for (let col = 1; col <= numColumns; col++) {
+			let maxScore = -1;
+			let maxScoreCell = null;
+			
+			rows.forEach(row => {
+				const cell = row.cells[col];
+				const score = parseFloat(cell.textContent);
+				
+				if (!isNaN(score) && score > maxScore) {
+					maxScore = score;
+					maxScoreCell = cell;
+				}
+			});
+			
+			if (maxScoreCell) {
+				maxScoreCell.classList.add('best-score');
+			}
+		}
+	}
+	
+	// 页面加载完成后执行
+	document.addEventListener('DOMContentLoaded', function() {
+		highlightBestScores();
+	});
+</script>
+
+<div class="container pt-5 mt-5 shadow-lg p-5 mb-5 bg-white rounded">
+	<h2 id="Role Play" style="text-align: center;">Role Play</h2>
+	<p>VoiceSculptor can portray any character.</p>
+		<div class="table-responsive pt-3">
+			<table class="table table-hover pt-2">
+				<thead>
+				<tr>
+				<th style="text-align: center">Role</th>
+				<th style="text-align: center">Instruct Text</th>
+				<th style="text-align: center">Text</th>
+				<th style="text-align: center">Generated</th>
+				</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td style="vertical-align : middle;text-align:center;">诗歌朗诵-雄浑有力</td>
+						<td style="vertical-align : middle;text-align:center; width:250px; max-width:250px;">一位男性现代诗朗诵者，用深沉磁性的低音，以顿挫有力的节奏演绎艾青诗歌，音量洪亮，情感激昂澎湃。</td>
+						<td style="vertical-align : middle;text-align:center; width:250px; max-width:250px;">为什么我的眼里常含泪水？因为我对这土地爱得深沉。这土地，这河流，这吹刮着的暴风。</td>
+						<td style="vertical-align : middle;text-align:center;"><audio controls="controls" style="width: 190px;"><source src="audios/role/shige.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					</tr>
+					<tr>
+						<td style="vertical-align : middle;text-align:center;">评书表演-抑扬顿挫</td>
+						<td style="vertical-align : middle;text-align:center;">这是一位男性评书表演者，用传统说唱腔调，以变速节奏和韵律感极强的语速讲述江湖故事，音量时高时低，充满江湖气。</td>
+						<td style="vertical-align : middle;text-align:center;">话说那武松，提着哨棒，直奔景阳冈。天色将晚，酒劲上头，只听一阵狂风，老虎来啦！</td>
+						<td style="vertical-align : middle;text-align:center;"><audio controls="controls" style="width: 190px;"><source src="audios/role/pingshu.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					</tr>
+					<tr>
+						<td style="vertical-align : middle;text-align:center;">戏剧表演-夸张戏剧</td>
+						<td style="vertical-align : middle;text-align:center;">这是一位男性戏剧表演者，用夸张戏剧化的嗓音，以忽高忽低的音调和时快时慢的语速表演独白，充满张力。</td>
+						<td style="vertical-align : middle;text-align:center;">我疯了！彻底疯了！你们都说我疯了！可疯的是这个世界！清醒的人反而被当成疯子！</td>
+						<td style="vertical-align : middle;text-align:center;"><audio controls="controls" style="width: 190px;"><source src="audios/role/xiju.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					</tr>
+					<tr>
+						<td style="vertical-align : middle;text-align:center;">童话故事-甜美夸张</td>
+						<td style="vertical-align : middle;text-align:center;">这是一位女性童话旁白朗诵者，用甜美夸张的童声，以跳跃变化的语速讲述《安徒生童话》，音调偏高，充满奇幻色彩。</td>
+						<td style="vertical-align : middle;text-align:center;">在一个很冷很冷的夜晚，小女孩擦亮了一根火柴。突然，温暖的火炉出现了！她觉得自己好像坐在火炉旁。</td>
+						<td style="vertical-align : middle;text-align:center;"><audio controls="controls" style="width: 190px;"><source src="audios/role/tonghua.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					</tr>
+
+					<tr>
+						<td style="vertical-align : middle;text-align:center;">老奶奶-沙哑低沉</td>
+						<td style="vertical-align : middle;text-align:center;">一位慈祥的老奶奶，用沙哑低沉的嗓音，以极慢而温暖的语速讲述民间传说，音量微弱但清晰，带着怀旧和神秘的情感。</td>
+						<td style="vertical-align : middle;text-align:center;">很久很久以前，在山的那边，住着一只会说话的狐狸。它常常在月圆之夜，变成美丽的姑娘，来到村子里。</td>
+						<td style="vertical-align : middle;text-align:center;"><audio controls="controls" style="width: 190px;"><source src="audios/role/laonainai.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					</tr>
+
+					<tr>
+						<td style="vertical-align : middle;text-align:center;">幼儿园女教师-温柔甜美</td>
+						<td style="vertical-align : middle;text-align:center;">这是一位幼儿园女教师，用甜美明亮的嗓音，以极慢且富有耐心的语速，带着温柔鼓励的情感，用标准普通话给小朋友讲睡前故事，音量轻柔适中，咬字格外清晰。</td>
+						<td style="vertical-align : middle;text-align:center;">月亮婆婆升上天空啦，星星宝宝都困啦。小白兔躺在床上，盖好小被子，闭上眼睛。兔妈妈轻轻地唱着摇篮曲：睡吧睡吧，我亲爱的宝贝。</td>
+						<td style="vertical-align : middle;text-align:center;"><audio controls="controls" style="width: 190px;"><source src="audios/role/jiaoshi.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					</tr>
+
+					<tr>
+						<td style="vertical-align : middle;text-align:center;">小女孩-尖锐清脆</td>
+						<td style="vertical-align : middle;text-align:center;">一位7岁的小女孩，用天真高亢的童声，以不稳定的快节奏，充满兴奋和炫耀地背诵乘法口诀，音调忽高忽低，带着儿童特有的尖锐清脆。</td>
+						<td style="vertical-align : middle;text-align:center;">一一得一！一二得二！一三得三！我会背乘法口诀啦！老师今天表扬我啦！妈妈说我最棒！</td>
+						<td style="vertical-align : middle;text-align:center;"><audio controls="controls" style="width: 190px;"><source src="audios/role/nvtong.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					</tr>
+
+					<tr>
+						<td style="vertical-align : middle;text-align:center;">广告配音-沧桑浑厚</td>
+						<td style="vertical-align : middle;text-align:center;">这是一位男性白酒品牌广告配音，用沧桑浑厚的嗓音，以缓慢而豪迈的语速，音量洪亮，传递历史底蕴和男人情怀。</td>
+						<td style="vertical-align : middle;text-align:center;">一杯敬过往，一杯敬远方。传承千年的酿造工艺，只在每一滴醇香。老朋友，值得好酒。</td>
+						<td style="vertical-align : middle;text-align:center;"><audio controls="controls" style="width: 190px;"><source src="audios/role/guanggao.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					</tr>
+
+					<tr>
+						<td style="vertical-align : middle;text-align:center;">纪录片旁白-低沉磁性</td>
+						<td style="vertical-align : middle;text-align:center;">这是一位男性纪录片旁白，用深沉磁性的嗓音，以缓慢而富有画面感的语速讲述自然奇观，音量适中，充满敬畏和诗意。</td>
+						<td style="vertical-align : middle;text-align:center;">在这片广袤的非洲草原上，生命与死亡每天都在上演。猎豹的速度，羚羊的敏捷，都是生存的代价。</td>
+						<td style="vertical-align : middle;text-align:center;"><audio controls="controls" style="width: 190px;"><source src="audios/role/jilupian.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					</tr>
+					
+					<tr>
+						<td style="vertical-align : middle;text-align:center;">相声风格-夸张幽默</td>
+						<td style="vertical-align : middle;text-align:center;">这是一位男性相声表演者，用夸张幽默的嗓音，以时快时慢的节奏抖包袱，音调起伏大，充满喜感和节奏感。</td>
+						<td style="vertical-align : middle;text-align:center;">我这个人啊，最大的优点就是太谦虚。谦虚到什么程度？连谦虚本身都觉得我太谦虚了！</td>
+						<td style="vertical-align : middle;text-align:center;"><audio controls="controls" style="width: 190px;"><source src="audios/role/xiangsheng.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					</tr>
+					<tr>
+						<td style="vertical-align : middle;text-align:center;">悬疑小说-低沉神秘</td>
+						<td style="vertical-align : middle;text-align:center;">一位男性悬疑小说演播者，用低沉神秘的嗓音，以时快时慢的变速节奏营造紧张氛围，音量忽高忽低，充满悬念感。</td>
+						<td style="vertical-align : middle;text-align:center;">深夜，他独自走在空无一人的小巷。脚步声，回声，还有……另一个人的呼吸声。他猛地回头——什么也没有。</td>
+						<td style="vertical-align : middle;text-align:center;"><audio controls="controls" style="width: 190px;"><source src="audios/role/xuanyi.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					</tr>
+
+					<tr>
+						<td style="vertical-align : middle;text-align:center;">新闻主播-清晰明亮</td>
+						<td style="vertical-align : middle;text-align:center;">这是一位女性新闻主播，用标准普通话以清晰明亮的中高音，以平稳专业的语速播报时事新闻，音量洪亮，情感客观中立。</td>
+						<td style="vertical-align : middle;text-align:center;">本台讯，今日凌晨，我国成功发射新一代载人飞船试验船。此次任务验证了多项关键技术，为后续空间站建设奠定基础。</td>
+						<td style="vertical-align : middle;text-align:center;"><audio controls="controls" style="width: 190px;"><source src="audios/role/xinwen.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					</tr>
+
+					<tr>
+						<td style="vertical-align : middle;text-align:center;">冥想引导师-空灵悠长</td>
+						<td style="vertical-align : middle;text-align:center;">一位女性冥想引导师，用空灵悠长的气声，以极慢而飘渺的语速，配合环境音效，音量轻柔，营造禅意空间。</td>
+						<td style="vertical-align : middle;text-align:center;">想象你是一片叶子，随风飘落。没有牵挂，没有重量。只有呼吸，只有当下，只有宁静。</td>
+						<td style="vertical-align : middle;text-align:center;"><audio controls="controls" style="width: 190px;"><source src="audios/role/minxiang.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					</tr>
+
+					<tr>
+						<td style="vertical-align : middle;text-align:center;">法治节目-庄严庄重</td>
+						<td style="vertical-align : middle;text-align:center;">这是一位男性法治节目主持人，用严肃庄重的嗓音，以平稳有力的语速讲述案件，音量适中，体现法律的威严。</td>
+						<td style="vertical-align : middle;text-align:center;">天网恢恢，疏而不漏。任何触犯法律的行为，终将受到公正的审判。正义或许会迟到，但绝不会缺席。</td>
+						<td style="vertical-align : middle;text-align:center;"><audio controls="controls" style="width: 190px;"><source src="audios/role/fazhi.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					</tr>
+					
+					<tr>
+						<td style="vertical-align : middle;text-align:center;">年轻女主播-直播带货</td>
+						<td style="vertical-align : middle;text-align:center;">这是一位年轻女主播，用标准普通话以明亮快速的语速进行直播带货，音调偏高且充满激情，音量响亮，情绪亢奋极具煽动性。</td>
+						<td style="vertical-align : middle;text-align:center;">家人们！这款面膜最后五百单！三二一，上链接！买到就是赚到，快抢快抢！我已经自留十盒了！</td>
+						<td style="vertical-align : middle;text-align:center;"><audio controls="controls" style="width: 190px;"><source src="audios/role/zhubo.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					</tr>
+
+					<tr>
+						<td style="vertical-align : middle;text-align:center;">男销售员-热情饱满</td>
+						<td style="vertical-align : middle;text-align:center;">一位男销售员，用热情饱满的高亢嗓音，以极快且富有煽动性的语速推销产品，音量逐渐提高，充满夸张和诱惑。</td>
+						<td style="vertical-align : middle;text-align:center;">家人们！这款保健品吃了能长寿！今天不要999，只要99！99你买不了吃亏，买不了上当！抢到就是赚到！</td>
+						<td style="vertical-align : middle;text-align:center;"><audio controls="controls" style="width: 190px;"><source src="audios/role/xiaoshou.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					</tr>
+
+					<tr>
+						<td style="vertical-align : middle;text-align:center;">历史老师-沉稳渊博</td>
+						<td style="vertical-align : middle;text-align:center;">这是一位男性历史老师，用沉稳渊博的嗓音，以中等偏慢的语速讲解历史事件，音量适中，充满知识性和启发性。</td>
+						<td style="vertical-align : middle;text-align:center;">安史之乱不仅是唐朝的转折点，更是整个中华文明由盛转衰的关键节点。我们要从多个角度看这段历史。</td>
+						<td style="vertical-align : middle;text-align:center;"><audio controls="controls" style="width: 190px;"><source src="audios/role/lishi.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					</tr>
+
+				</tbody>
+			</table>
+	</div>
+</div>
+
+
+<div class="container pt-5 mt-5 shadow-lg p-5 mb-5 bg-white rounded">
+	<h2 id="Voice Diversity" style="text-align: center;">Voice Diversity</h2>
+	<p>VoiceSculptor can generate multiple distinct voice from a single text instruct.</p>
+		<div class="table-responsive pt-3">
+			<table class="table table-hover pt-2">
+				<thead>
+				<tr>
+				<th style="text-align: center">Role</th>
+				<th style="text-align: center">Instruct Text</th>
+				<th style="text-align: center">Text</th>
+				<th style="text-align: center">Generated</th>
+				</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td style="vertical-align : middle;text-align:center; "rowspan="7">评书表演-抑扬顿挫</td>
+						<td style="vertical-align : middle;text-align:center; width:250px; max-width:250px; "rowspan="7">这是一位男性评书表演者，用传统说唱腔调，以变速节奏和韵律感极强的语速讲述江湖故事，音量时高时低，充满江湖气。</td>
+						<td style="vertical-align : middle;text-align:center; width:250px; max-width:250px;"rowspan="7">话说那武松，提着哨棒，直奔景阳冈。天色将晚，酒劲上头，只听一阵狂风，老虎来啦！</td>
+						<td style="vertical-align : middle;text-align:center;"><audio controls="controls" style="width: 190px;"><source src="audios/multi/pingshu.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					</tr>
+
+					<tr>
+						<td style="vertical-align : middle;text-align:center;"><audio controls="controls" style="width: 190px;"><source src="audios/multi/pingshu1.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					</tr>
+					
+					<tr>
+						<td style="vertical-align : middle;text-align:center;"><audio controls="controls" style="width: 190px;"><source src="audios/multi/pingshu2.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					</tr>
+					
+					<tr>
+						<td style="vertical-align : middle;text-align:center;"><audio controls="controls" style="width: 190px;"><source src="audios/multi/pingshu3.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					</tr>
+					
+					<tr>
+						<td style="vertical-align : middle;text-align:center;"><audio controls="controls" style="width: 190px;"><source src="audios/multi/pingshu4.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					</tr>
+
+					<tr>
+						<td style="vertical-align : middle;text-align:center;"><audio controls="controls" style="width: 190px;"><source src="audios/multi/pingshu5.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					</tr>
+					
+					<tr>
+						<td style="vertical-align : middle;text-align:center;"><audio controls="controls" style="width: 190px;"><source src="audios/multi/pingshu6.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					</tr>
+
+					<tr>
+						<td style="vertical-align : middle;text-align:center; "rowspan="7">幼儿园女教师-温柔甜美</td>
+						<td style="vertical-align : middle;text-align:center; width:280px; max-width:280px; "rowspan="7">这是一位幼儿园女教师，用甜美明亮的嗓音，以极慢且富有耐心的语速，带着温柔鼓励的情感，用标准普通话给小朋友讲睡前故事，音量轻柔适中，咬字格外清晰。</td>
+						<td style="vertical-align : middle;text-align:center; "rowspan="7">月亮婆婆升上天空啦，星星宝宝都困啦。小白兔躺在床上，盖好小被子，闭上眼睛。兔妈妈轻轻地唱着摇篮曲：睡吧睡吧，我亲爱的宝贝。</td>
+						<td style="vertical-align : middle;text-align:center;"><audio controls="controls" style="width: 190px;"><source src="audios/multi/jiaoshi.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					</tr>
+
+					<tr>
+						<td style="vertical-align : middle;text-align:center;"><audio controls="controls" style="width: 190px;"><source src="audios/multi/jiaoshi1.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					</tr>
+					
+					<tr>
+						<td style="vertical-align : middle;text-align:center;"><audio controls="controls" style="width: 190px;"><source src="audios/multi/jiaoshi2.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					</tr>
+					
+					<tr>
+						<td style="vertical-align : middle;text-align:center;"><audio controls="controls" style="width: 190px;"><source src="audios/multi/jiaoshi3.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					</tr>
+					
+					<tr>
+						<td style="vertical-align : middle;text-align:center;"><audio controls="controls" style="width: 190px;"><source src="audios/multi/jiaoshi4.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					</tr>
+
+					<tr>
+						<td style="vertical-align : middle;text-align:center;"><audio controls="controls" style="width: 190px;"><source src="audios/multi/jiaoshi5.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					</tr>
+					
+					<tr>
+						<td style="vertical-align : middle;text-align:center;"><audio controls="controls" style="width: 190px;"><source src="audios/multi/jiaoshi6.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					</tr>
+				</tbody>
+
+			</table>
+		</div>
+	</div>
+</div>
+
+
+<div class="container pt-5 mt-5 shadow-lg p-5 mb-5 bg-white rounded">
+	<h2 id="Fine-grained Voice Control" style="text-align: center;">Fine-grained Control of Prosodic Attributes</h2>
+	<p>VoiceSculptor enables fine-grained control over voice attributes, including gender, age, pitch, pitch variation, volume, and speaking rate, by combining natural language instructions with control tags.</p>
+		<div class="table-responsive pt-3">
+			<table class="table table-hover pt-2">
+				<thead>
+					<tr>
+					<th style="text-align: center">Text</th>
+					<th style="text-align: center">Instruct Text</th>
+					<th style="text-align: center">Tag</th>
+					<th style="text-align: center">Generated</th>
+					</tr>
+					</thead>
+				<thead>
+				<tbody>
+						<tr>
+							<td style="vertical-align : middle;text-align:center; width:280px; max-width:280px; "rowspan="18">本台讯，今日凌晨，我国成功发射新一代载人飞船试验船。此次任务验证了多项关键技术，为后续空间站建设奠定基础。</td>
+							<td style="vertical-align : middle;text-align:center;">这是一位男性新闻主播</td>
+							<td style="vertical-align : middle;text-align:center;">男性</td>
+							<td style="vertical-align : middle;text-align:center;"><audio controls="controls" style="width: 190px;"><source src="audios/low_level/audio_man.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+						</tr>
+						<tr>
+							<td style="vertical-align : middle;text-align:center;">这是一位女性新闻主播</td>
+							<td style="vertical-align : middle;text-align:center;">女性</td>
+							<td style="vertical-align : middle;text-align:center;"><audio controls="controls" style="width: 190px;"><source src="audios/low_level/audio_woman.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+						</tr>
+
+						<tr>
+							<td style="vertical-align : middle;text-align:center;">这是一位女孩，新闻主播</td>
+							<td style="vertical-align : middle;text-align:center;">小孩</td>
+							<td style="vertical-align : middle;text-align:center;"><audio controls="controls" style="width: 190px;"><source src="audios/low_level/audio_child.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+						</tr>
+						
+						<tr>
+							<td style="vertical-align : middle;text-align:center;">这是一位青年女性新闻主播</td>
+							<td style="vertical-align : middle;text-align:center;">青年</td>
+							<td style="vertical-align : middle;text-align:center;"><audio controls="controls" style="width: 190px;"><source src="audios/low_level/audio_qingnian.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+						</tr>
+
+						<tr>
+							<td style="vertical-align : middle;text-align:center;">这是一位中年女性新闻主播</td>
+							<td style="vertical-align : middle;text-align:center;">中年</td>
+							<td style="vertical-align : middle;text-align:center;"><audio controls="controls" style="width: 190px;"><source src="audios/low_level/audio_zhongnian.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+						</tr>
+
+						<tr>
+							<td style="vertical-align : middle;text-align:center;">这是一位老年女性新闻主播</td>
+							<td style="vertical-align : middle;text-align:center;">老年</td>
+							<td style="vertical-align : middle;text-align:center;"><audio controls="controls" style="width: 190px;"><source src="audios/low_level/audio_old.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+						</tr>
+	
+						
+						<tr>
+							<td style="vertical-align : middle;text-align:center;">这是一位女性新闻主播，音调高。</td>
+							<td style="vertical-align : middle;text-align:center;">音调很高</td>
+							<td style="vertical-align : middle;text-align:center;"><audio controls="controls" style="width: 190px;"><source src="audios/low_level/audio_yindiaogao.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+						</tr>
+	
+						<tr>
+							<td style="vertical-align : middle;text-align:center;">这是一位女性新闻主播，音调中等。</td>
+							<td style="vertical-align : middle;text-align:center;">音调中等</td>
+							<td style="vertical-align : middle;text-align:center;"><audio controls="controls" style="width: 190px;"><source src="audios/low_level/audio_yindiaozhong.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+						</tr>
+						
+						<tr>
+							<td style="vertical-align : middle;text-align:center;">这是一位女性新闻主播，音调低。</td>
+							<td style="vertical-align : middle;text-align:center;">音调很低</td>
+							<td style="vertical-align : middle;text-align:center;"><audio controls="controls" style="width: 190px;"><source src="audios/low_level/audio_yindiaodi.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+						</tr>
+						
+						<tr>
+							<td style="vertical-align : middle;text-align:center;">这是一位女性新闻主播，音调变化很强。</td>
+							<td style="vertical-align : middle;text-align:center;">音调变化很强</td>
+							<td style="vertical-align : middle;text-align:center;"><audio controls="controls" style="width: 190px;"><source src="audios/low_level/audio_yindiaoqiang.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+						</tr>
+
+						<tr>
+							<td style="vertical-align : middle;text-align:center;">这是一位女性新闻主播，音调变化一般。</td>
+							<td style="vertical-align : middle;text-align:center;">音调变化一般</td>
+							<td style="vertical-align : middle;text-align:center;"><audio controls="controls" style="width: 190px;"><source src="audios/low_level/audio_yindiaozhongbian.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+						</tr>
+
+						<tr>
+							<td style="vertical-align : middle;text-align:center;">这是一位女性新闻主播，音调变化很弱。</td>
+							<td style="vertical-align : middle;text-align:center;">音调变化很弱</td>
+							<td style="vertical-align : middle;text-align:center;"><audio controls="controls" style="width: 190px;"><source src="audios/low_level/audio_yindiaoruo.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+						</tr>
+						
+						<tr>
+							<td style="vertical-align : middle;text-align:center;">这是一位女性新闻主播，音量很大。</td>
+							<td style="vertical-align : middle;text-align:center;">音量很大</td>
+							<td style="vertical-align : middle;text-align:center;"><audio controls="controls" style="width: 190px;"><source src="audios/low_level/audio_yinliangda.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+						</tr>
+						
+						<tr>
+							<td style="vertical-align : middle;text-align:center;">这是一位女性新闻主播，音量中等。</td>
+							<td style="vertical-align : middle;text-align:center;">音量中等</td>
+							<td style="vertical-align : middle;text-align:center;"><audio controls="controls" style="width: 190px;"><source src="audios/low_level/audio_yinliangzhong.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+						</tr>
+						
+						<tr>
+							<td style="vertical-align : middle;text-align:center;">这是一位女性新闻主播，音量很小。</td>
+							<td style="vertical-align : middle;text-align:center;">音量很小</td>
+							<td style="vertical-align : middle;text-align:center;"><audio controls="controls" style="width: 190px;"><source src="audios/low_level/audio_yinliangxiao.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+						</tr>
+						
+						<tr>
+							<td style="vertical-align : middle;text-align:center;">这是一位女性新闻主播，语速很快。</td>
+							<td style="vertical-align : middle;text-align:center;">语速很快</td>
+							<td style="vertical-align : middle;text-align:center;"><audio controls="controls" style="width: 190px;"><source src="audios/low_level/audio_yusukuai.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+						</tr>
+						
+						<tr>
+							<td style="vertical-align : middle;text-align:center;">这是一位女性新闻主播，语速中等。</td>
+							<td style="vertical-align : middle;text-align:center;">语速中等</td>
+							<td style="vertical-align : middle;text-align:center;"><audio controls="controls" style="width: 190px;"><source src="audios/low_level/audio_yusuzhong.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+						</tr>
+						
+						<tr>
+							<td style="vertical-align : middle;text-align:center;">这是一位女性新闻主播，语速很慢。</td>
+							<td style="vertical-align : middle;text-align:center;">语速很慢</td>
+							<td style="vertical-align : middle;text-align:center;"><audio controls="controls" style="width: 190px;"><source src="audios/low_level/audio_yusuman.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+						</tr>
+
+				</tbody>
+
+			</table>
+		</div>
+	</div>
+</div>
+
+
+<div class="container pt-5 mt-5 shadow-lg p-5 mb-5 bg-white rounded">
+	<h2 id="Emotion Control" style="text-align: center;">Emotion Control</h2>
+	<p>VoiceSculptor enables fine-grained control over emotion by combining natural language with tags.</p>
+		<div class="table-responsive pt-3">
+			<table class="table table-hover pt-2">
+				<thead>
+					<tr>
+					<th style="text-align: center">Text</th>
+					<th style="text-align: center">Instruct Text</th>
+					<th style="text-align: center">Tag</th>
+					<th style="text-align: center">Generated</th>
+					</tr>
+					</thead>
+				<thead>
+				<tbody>
+						<tr>
+							<td style="vertical-align : middle;text-align:center;width:500px; max-width:500px">医生……他还能听见我吗？求你再试一次，我——我还没来得及说再见……</td>
+							<td style="vertical-align : middle;text-align:center;width:500px; max-width:500px">一位站在医院走廊的青年女性，声音细薄带浓重哭腔，语速断续、音量轻飘，情绪崩溃边缘，吐字被抽噎切成碎片。</td>
+							<td style="vertical-align : middle;text-align:center;">难过</td>
+							<td style="vertical-align : middle;text-align:center;"><audio controls="controls" style="width: 190px;"><source src="audios/emo/audio_beishang4.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+						</tr>
+						
+						<tr>
+							<td style="vertical-align : middle;text-align:center;width:500px; max-width:500px">灯……灯怎么闪了？走廊的脚步声不是我幻听，对吧？拜托，有人吗？我……我躲好了，别过来……</td>
+							<td style="vertical-align : middle;text-align:center;width:500px; max-width:500px">这是一位躲藏在空教室的少女，声音细弱发颤，带着哭腔，语速断续、音量极小，情绪害怕紧张，吐字被呼吸声切割。</td>
+							<td style="vertical-align : middle;text-align:center;">害怕</td>
+							<td style="vertical-align : middle;text-align:center;"><audio controls="controls" style="width: 190px;"><source src="audios/emo/audio_haipa1.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+						</tr>
+
+						<tr>
+							<td style="vertical-align : middle;text-align:center;width:500px; max-width:500px">小手拉大手，彩虹伞一起抛——哇！伞变成大泡泡啦！孩子们，转圈圈，让笑声飞到天上去！</td>
+							<td style="vertical-align : middle;text-align:center;width:500px; max-width:500px">这是一位带户外活动的女老师，声音明亮圆润，语速中等偏快、音量饱满，极其高兴和开心。</td>
+							<td style="vertical-align : middle;text-align:center;">开心</td>
+							<td style="vertical-align : middle;text-align:center;"><audio controls="controls" style="width: 190px;"><source src="audios/emo/audio_kaixin2.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+						</tr>
+
+						<tr>
+							<td style="vertical-align : middle;text-align:center;width:500px; max-width:500px">安全帽！谁又没戴安全帽？再让我看见一次，立马停工！命只有一条，别拿它换侥幸！</td>
+							<td style="vertical-align : middle;text-align:center;width:500px; max-width:500px">这是一位在嘈杂工地喊话的男领班，声音粗厚高亢，语速急、音量极大，情绪愤怒爆发，吐字短促硬截。</td>
+							<td style="vertical-align : middle;text-align:center;">愤怒</td>
+							<td style="vertical-align : middle;text-align:center;"><audio controls="controls" style="width: 190px;"><source src="audios/emo/audio_fennu1.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+						</tr>
+
+						<tr>
+							<td style="vertical-align : middle;text-align:center;width:500px; max-width:500px">哇——！隐藏款居然第一抽就出？！弹幕快看，闪到我了！</td>
+							<td style="vertical-align : middle;text-align:center;width:500px; max-width:500px">一位凌晨直播开箱的青年女主播，声音原本清脆，瞬间拔高变尖，语速陡然加快、音量骤升，情绪惊喜到破音，吐字短促带气声。</td>
+							<td style="vertical-align : middle;text-align:center;">惊讶</td>
+							<td style="vertical-align : middle;text-align:center;"><audio controls="controls" style="width: 190px;"><source src="audios/emo/audio_jingya1.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+						</tr>
+
+						<tr>
+							<td style="vertical-align : middle;text-align:center;width:500px; max-width:500px">先生，请把袜子穿好，地板被你踩得黏唧唧——我快窒息了。</td>
+							<td style="vertical-align : middle;text-align:center;width:500px; max-width:500px">一位深夜便利店收银的青年女性，声音细尖带鼻音，语速急，透着烦躁，情绪厌恶到皱眉。</td>
+							<td style="vertical-align : middle;text-align:center;">厌恶</td>
+							<td style="vertical-align : middle;text-align:center;"><audio controls="controls" style="width: 190px;"><source src="audios/emo/audio_yanwu1.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+						</tr>
+						
+				</tbody>
+
+			</table>
+		</div>
+	</div>
+</div>
+
+
+
+
+<div class="container pt-5 mt-5 shadow-lg p-5 mb-5 bg-white rounded">
+	<h2 id="Retrieval-Augmented Generation" style="text-align: center;">Retrieval-Augmented Generation</h2>
+	<p>VoiceSculptor leverages Retrieval-Augmented Generation (RAG) technology to enable retrieval-enhanced generation.</p>
+	<div class="table-responsive pt-3">
+		<table class="table table-hover pt-2">
+			<thead>
+				<tr>
+				<th style="text-align: center">Text</th>
+				<th style="text-align: center">Instruct Text</th>
+				<th style="text-align: center">Type</th>
+				<th style="text-align: center">Generated</th>
+				</tr>
+				</thead>
+			<thead>
+			<tbody>
+					<tr>
+						<td style="vertical-align : middle;text-align:center; width:280px; max-width:280px;"rowspan="2" >你回来！把那句话给我收回去！收回去！</td>
+						<td style="vertical-align : middle;text-align:center;"rowspan="2">一位青年女性，嘶吼着说。</td>
+						<td style="vertical-align : middle;text-align:center;">Instruct</td>
+						
+						<td style="vertical-align : middle;text-align:center;"><audio controls="controls" style="width: 190px;"><source src="audios/rag/sihou.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					</tr>
+					<tr>
+						<td style="vertical-align : middle;text-align:center;">Instruct+RAG</td>
+						<td style="vertical-align : middle;text-align:center;"><audio controls="controls" style="width: 190px;"><source src="audios/rag/sihou_rag.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					</tr>
+
+					<tr>
+						<td style="vertical-align : middle;text-align:center; width:280px; max-width:280px;"rowspan="2" >要是走，就带我一起下地狱，别把我一个人扔在这里。</td>
+						<td style="vertical-align : middle;text-align:center;"rowspan="2">一位青年女性，带着哭腔说。</td>
+						<td style="vertical-align : middle;text-align:center;">Instruct</td>
+						
+						<td style="vertical-align : middle;text-align:center;"><audio controls="controls" style="width: 190px;"><source src="audios/rag/kuqiang1.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					</tr>
+					<tr>
+						<td style="vertical-align : middle;text-align:center;">Instruct+RAG</td>
+						<td style="vertical-align : middle;text-align:center;"><audio controls="controls" style="width: 190px;"><source src="audios/rag/kuqiang_rag.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					</tr>
+
+					<tr>
+						<td style="vertical-align : middle;text-align:center; width:280px; max-width:280px;"rowspan="2" >嘘，我们小声点，让故事继续睡觉。</td>
+						<td style="vertical-align : middle;text-align:center;"rowspan="2">一位青年女性，轻声细语地说。</td>
+						<td style="vertical-align : middle;text-align:center;">Instruct</td>
+						
+						<td style="vertical-align : middle;text-align:center;"><audio controls="controls" style="width: 190px;"><source src="audios/rag/qingshengxiyu1.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					</tr>
+					<tr>
+						<td style="vertical-align : middle;text-align:center;">Instruct+RAG</td>
+						<td style="vertical-align : middle;text-align:center;"><audio controls="controls" style="width: 190px;"><source src="audios/rag/qingshengxiyu_rag.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					</tr>
+			</tbody>
+
+		</table>
+	</div>
+</div>
+</div>
+
+<div class="container pt-5 mt-5 shadow-lg p-5 mb-5 bg-white rounded">
+	<h2 id="Voice Clone" style="text-align: center;">Voice Clone</h2>
+	<p>VoiceSculptor leverages LLaSA-based voice design to generate audio, and then uses CosyVoice2 for timbre cloning and speech synthesis tasks.</p>
+		<div class="table-responsive pt-3">
+			<table class="table table-hover pt-2">
+				<thead>
+				<tr>
+				<th style="text-align: center">Text</th>
+				<th style="text-align: center">Prompt</th>
+				<th style="text-align: center">Generated</th>
+				</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td style="vertical-align : middle;text-align:center;width:280px; max-width:280px;">
+							冬天来得太早，小刺猬阿栗的苹果全冻成了冰球。它把最后一颗苹果塞进胸口，却听见“咚”的一声，苹果里孵出一只金黄的小太阳，只有纽扣大。阿栗把太阳藏进自己的刺缝里，走一路，雪化一路；它经过的地方，开出指甲盖大的雏菊，像给雪地扣上悄悄话。
+						</td>
+						<td style="vertical-align : middle;text-align:center;"><audio controls="controls" style="width: 190px;"><source src="audios/clone/prompt_tonghua.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+						<td style="vertical-align : middle;text-align:center;"><audio controls="controls" style="width: 190px;"><source src="audios/clone/tonghua_new.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					</tr>
+					<tr>
+						<td style="vertical-align : middle;text-align:center;width:280px; max-width:280px;">
+							灯花刚爆，满楼金漆还晃着眼，就见一条灰影贴着大梁滑过，活似壁虎倒行，却连一粒尘都没惊。此人姓赛，名无影，江湖送号“袖里闪电”，专偷旁人眨眼间。 那夜，开封府堂上高悬“御赐琉璃灯”，灯罩八瓣，瓣瓣镶夜明珠一颗，值江北三年粮。包大人刚拍惊堂木，灯还在；木声未落，灯已灭。众衙役眼前一黑，再亮时，灯罩空空，八珠尽失！
+						</td>
+						<td style="vertical-align : middle;text-align:center;"><audio controls="controls" style="width: 190px;"><source src="audios/clone/prompt_pingshu.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+						<td style="vertical-align : middle;text-align:center;"><audio controls="controls" style="width: 190px;"><source src="audios/clone/pingshu_new.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					</tr>
+					<tr>
+						<td style="vertical-align : middle;text-align:center;width:280px; max-width:280px;">
+							把晨曦折成旗，  
+							五颗星悬在我胸口；  
+							一声鸽哨，  
+							万里山河同时回礼。  
+							我把最亮的浪花写进你的名字，  
+							风一吹，  
+							整片土地都举起金黄的麦穗。
+						</td>
+						<td style="vertical-align : middle;text-align:center;"><audio controls="controls" style="width: 190px;"><source src="audios/clone/prompt_shige.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+						<td style="vertical-align : middle;text-align:center;"><audio controls="controls" style="width: 190px;"><source src="audios/clone/shige.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+</div>
+
+</article>
+</main>
+</div>
+
+</body>
+</html>

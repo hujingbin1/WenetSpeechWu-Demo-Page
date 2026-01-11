@@ -1,2 +1,2 @@
-# WenetSpeechWu-Demo-Page
-WenetSpeechWu demo page
+# VoiceSculptor-Demo-Page
+VoiceSculptor Demo Page 
