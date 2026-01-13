@@ -46,10 +46,10 @@
 	<b>Contents</b>
       <ul>
         <li><a href="#Datapipline-Overview">Datapipline Overview</a></li>
-		<li><a href="#Demo Video">Demo Video</a></li>
+		<!-- <li><a href="#Demo Video">Demo Video</a></li> -->
         <li><a href="#TTS results on WenetSpeech-Wu-Bench">TTS results on WenetSpeech-Wu-Bench</a></li>
 		<li><a href="#TTS">TTS</a></li>
-		<li><a href="#Instruct TTS">Instruct TTS</a></li>
+		<li><a href="#Instruct-TTS">Instruct TTS</a></li>
       </ul>
 	</p>
 
@@ -71,13 +71,13 @@
 		</p>
 </div>
 
-<div class="container pt-5 mt-5 shadow-lg p-5 mb-5 bg-white rounded">
+<!-- <div class="container pt-5 mt-5 shadow-lg p-5 mb-5 bg-white rounded">
 	<h2 id="Demo Video" style="text-align: center;">Demo Video</h2>
 	<video controls width="100%" style="max-width:720px;margin:1rem auto;display:block;">
 	  <source src="media/demo_video.mov" type="video/mp4">
 	  您的浏览器不支持 video 标签。
 	</video>
-  </div>
+  </div> -->
 
 
 <style>
@@ -324,39 +324,42 @@
 </div>
 
 	
+<style>
+  table.table-bordered {
+    border: 1px solid #bbb;
+    border-collapse: collapse;
+  }
 
-<script>
-	function highlightBestScores() {
-		const table = document.getElementById('performanceTable');
-		const tbody = table.querySelector('tbody');
-		const rows = tbody.querySelectorAll('tr');
-		const numColumns = 4; // APS, DSD, RP, AVG
-		
-		for (let col = 1; col <= numColumns; col++) {
-			let maxScore = -1;
-			let maxScoreCell = null;
-			
-			rows.forEach(row => {
-				const cell = row.cells[col];
-				const score = parseFloat(cell.textContent);
-				
-				if (!isNaN(score) && score > maxScore) {
-					maxScore = score;
-					maxScoreCell = cell;
-				}
-			});
-			
-			if (maxScoreCell) {
-				maxScoreCell.classList.add('best-score');
-			}
-		}
-	}
-	
-	// 页面加载完成后执行
-	document.addEventListener('DOMContentLoaded', function() {
-		highlightBestScores();
-	});
-</script>
+  table.table-bordered th,
+  table.table-bordered td {
+    border: 1px solid #ddd;
+    vertical-align: middle;
+  }
+
+  thead th {
+    background-color: #f6f6f6;
+    font-weight: 700;
+    text-align: center;
+  }
+
+  /* 仅用于分组列 */
+  .group-tag,
+  .group-type,
+  .group-inst {
+    font-weight: 600;
+    background-color: #fafafa;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  /* 确保文本列永远正常字重 */
+  .text-cell {
+    font-weight: 400;
+    text-align: left;
+  }
+</style>
+
+
 
 <div class="container pt-5 mt-5 shadow-lg p-5 mb-5 bg-white rounded">
   <h2 id="TTS" style="text-align:center;">TTS</h2>
@@ -384,7 +387,7 @@
 
           <!-- 文本 1 -->
           <td rowspan="6" style="text-align:left; width:220px;">
-            这里是统一的文本内容 1
+            昨日夜里向落了一夜雨，今早起来空气特别清爽，马路浪向也干净交关。
           </td>
           <td>
             <audio controls style="width:150px;">
@@ -394,7 +397,7 @@
 
           <!-- 文本 2 -->
           <td rowspan="6" style="text-align:left; width:220px;">
-            这里是统一的文本内容 2
+            今朝是礼拜六，我准备辣屋里向打扫卫生，拿房间理理清爽。
           </td>
           <td>
             <audio controls style="width:150px;">
@@ -404,7 +407,7 @@
 
           <!-- 文本 3 -->
           <td rowspan="6" style="text-align:left; width:220px;">
-            这里是统一的文本内容 3
+            最近工作浪向有个项目快要结束哉，大家侪辣抓紧辰光做。
           </td>
           <td>
             <audio controls style="width:150px;">
@@ -414,7 +417,7 @@
 
           <!-- 文本 4 -->
           <td rowspan="6" style="text-align:left; width:220px;">
-            这里是统一的文本内容 4
+            我小辰光最怕打针，看到医生就吓得来要命。
           </td>
           <td>
             <audio controls style="width:150px;">
@@ -473,14 +476,13 @@
   </div>
 </div>
 
-
 <div class="container pt-5 mt-5 shadow-lg p-5 mb-5 bg-white rounded">
-  <h2 id="Instruct TTS" style="text-align:center;">Instruct TTS</h2>
+  <h2 id="Instruct-TTS" style="text-align:center;">Instruct TTS</h2>
 
   <div class="table-responsive pt-3">
     <table class="table table-hover table-bordered align-middle">
       <thead>
-        <tr class="text-center">
+        <tr>
           <th style="width:120px;">Tag</th>
           <th style="width:140px;">类型</th>
           <th style="width:260px;">指令</th>
@@ -493,108 +495,107 @@
       <tbody>
         <!-- ================= Prosodic Control ================= -->
         <tr>
-          <td rowspan="6" class="text-center fw-bold">Prosodic<br>Control</td>
-          <td rowspan="3" class="text-center fw-bold">基频低<br>语速慢</td>
-          <td rowspan="3">音调很低，语速很慢地说</td>
-          <td>阿拉屋里向养了一只小猫，伊老欢喜晒太阳的，每日下半天总归蹲辣窗口。</td>
-          <td class="text-center"><audio controls style="width:150px;"><source src="audios/prosody/low_slow_1_sft.wav"></audio></td>
-          <td class="text-center"><audio controls style="width:150px;"><source src="audios/prosody/low_slow_1_instruct.wav"></audio></td>
+          <td rowspan="6" class="group-tag">Prosodic<br>Control</td>
+          <td rowspan="3" class="group-type">基频低<br>语速慢</td>
+          <td rowspan="3" class="group-inst">音调很低，语速很慢地说</td>
+          <td class="text-cell">阿拉屋里向养了一只小猫，伊老欢喜晒太阳的，每日下半天总归蹲辣窗口。</td>
+          <td class="text-center"><audio controls style="width:150px;"><source src="audios/ProsodicControl/1-1/baseline_yusuman_jipindi_15_A0004_S0007_0_G0007_G0008_657_2.wav"></audio></td>
+          <td class="text-center"><audio controls style="width:150px;"><source src="audios/ProsodicControl/1-1/yusuman_jipindi_15_A0004_S0007_0_G0007_G0008_657_2.wav"></audio></td>
         </tr>
 
         <tr>
-          <td>今朝早浪向我去买早点的辰光，看见街浪向的樱花已经开哉，蛮漂亮的。</td>
-          <td class="text-center"><audio controls style="width:150px;"><source src="audios/prosody/low_slow_2_sft.wav"></audio></td>
-          <td class="text-center"><audio controls style="width:150px;"><source src="audios/prosody/low_slow_2_instruct.wav"></audio></td>
+          <td class="text-cell">今朝早浪向我去买早点的辰光，看见街浪向的樱花已经开哉，蛮漂亮的。</td>
+          <td class="text-center"><audio controls style="width:150px;"><source src="audios/ProsodicControl/1-2/baseline_yusuman_jipindi_15_A0002_S0003_0_G0003_G0004_338_18.wav"></audio></td>
+          <td class="text-center"><audio controls style="width:150px;"><source src="audios/ProsodicControl/1-2/yusuman_jipindi_15_A0002_S0003_0_G0003_G0004_338_18.wav"></audio></td>
         </tr>
 
         <tr>
-          <td>今朝是礼拜六，我准备辣屋里向打扫卫生，拿房间理理清爽。</td>
-          <td class="text-center"><audio controls style="width:150px;"><source src="audios/prosody/low_slow_3_sft.wav"></audio></td>
-          <td class="text-center"><audio controls style="width:150px;"><source src="audios/prosody/low_slow_3_instruct.wav"></audio></td>
+          <td class="text-cell">今朝是礼拜六，我准备辣屋里向打扫卫生，拿房间理理清爽。</td>
+          <td class="text-center"><audio controls style="width:150px;"><source src="audios/ProsodicControl/1-3/baseline_yusuman_jipindi_15_A0002_S0003_0_G0003_G0004_446_15.wav"></audio></td>
+          <td class="text-center"><audio controls style="width:150px;"><source src="audios/ProsodicControl/1-3/yusuman_jipindi_15_A0004_S0007_0_G0007_G0008_657_15.wav"></audio></td>
         </tr>
 
         <tr>
-          <td rowspan="3" class="text-center fw-bold">基频高<br>语速快</td>
-          <td rowspan="3">音调很高，语速很快地说</td>
-          <td>阿拉屋里向养了一只小猫，伊老欢喜晒太阳的，每日下半天总归蹲辣窗口。</td>
-          <td class="text-center"><audio controls style="width:150px;"><source src="audios/prosody/high_fast_1_sft.wav"></audio></td>
-          <td class="text-center"><audio controls style="width:150px;"><source src="audios/prosody/high_fast_1_instruct.wav"></audio></td>
+          <td rowspan="3" class="group-type">基频高<br>语速快</td>
+          <td rowspan="3" class="group-inst">音调很高，语速很快地说</td>
+          <td class="text-cell">阿拉屋里向养了一只小猫，伊老欢喜晒太阳的，每日下半天总归蹲辣窗口。</td>
+          <td class="text-center"><audio controls style="width:150px;"><source src="audios/ProsodicControl/2-1/baseline_yusukuai_jipingao_15_A0002_S0003_0_G0003_G0004_446_2.wav"></audio></td>
+          <td class="text-center"><audio controls style="width:150px;"><source src="audios/ProsodicControl/2-1/yusukuai_jipingao_15_A0002_S0003_0_G0003_G0004_446_2.wav"></audio></td>
         </tr>
 
         <tr>
-          <td>今朝早浪向我去买早点的辰光，看见街浪向的樱花已经开哉，蛮漂亮的。</td>
-          <td class="text-center"><audio controls style="width:150px;"><source src="audios/prosody/high_fast_2_sft.wav"></audio></td>
-          <td class="text-center"><audio controls style="width:150px;"><source src="audios/prosody/high_fast_2_instruct.wav"></audio></td>
+          <td class="text-cell">今朝早浪向我去买早点的辰光，看见街浪向的樱花已经开哉，蛮漂亮的。</td>
+          <td class="text-center"><audio controls style="width:150px;"><source src="audios/ProsodicControl/2-2/baseline_yusukuai_jipingao_15_A0002_S0003_0_G0003_G0004_338_18.wav"></audio></td>
+          <td class="text-center"><audio controls style="width:150px;"><source src="audios/ProsodicControl/2-2/yusukuai_jipingao_15_A0002_S0003_0_G0003_G0004_338_18.wav"></audio></td>
         </tr>
 
         <tr>
-          <td>今朝是礼拜六，我准备辣屋里向打扫卫生，拿房间理理清爽。</td>
-          <td class="text-center"><audio controls style="width:150px;"><source src="audios/prosody/high_fast_3_sft.wav"></audio></td>
-          <td class="text-center"><audio controls style="width:150px;"><source src="audios/prosody/high_fast_3_instruct.wav"></audio></td>
+          <td class="text-cell">今朝是礼拜六，我准备辣屋里向打扫卫生，拿房间理理清爽。</td>
+          <td class="text-center"><audio controls style="width:150px;"><source src="audios/ProsodicControl/2-3/baseline_yusukuai_jipingao_15_A0002_S0003_0_G0003_G0004_446_15.wav"></audio></td>
+          <td class="text-center"><audio controls style="width:150px;"><source src="audios/ProsodicControl/2-3/yusukuai_jipingao_15_A0004_S0007_0_G0007_G0008_657_15.wav"></audio></td>
         </tr>
 
         <!-- ================= Emotional Control ================= -->
         <tr>
-          <td rowspan="9" class="text-center fw-bold">Emotional<br>Control</td>
-          <td rowspan="3" class="text-center fw-bold">开心</td>
-          <td rowspan="3">用开心的情感说</td>
-          <td>买到一只老灵巧个开瓶器，轻轻一扳就开，省力交关。</td>
-          <td class="text-center"><audio controls style="width:150px;"><source src="audios/emotion/happy_1_sft.wav"></audio></td>
-          <td class="text-center"><audio controls style="width:150px;"><source src="audios/emotion/happy_1_instruct.wav"></audio></td>
+          <td rowspan="9" class="group-tag">Emotional<br>Control</td>
+          <td rowspan="3" class="group-type">开心</td>
+          <td rowspan="3" class="group-inst">用开心的情感说</td>
+          <td class="text-cell">买到一只老灵巧个开瓶器，轻轻一扳就开，省力交关。</td>
+          <td class="text-center"><audio controls style="width:150px;"><source src="audios/EmotionalControl/happy-1/baseline_kaixin_A0038_S0006_0_G0075_G0076_335_48.wav"></audio></td>
+          <td class="text-center"><audio controls style="width:150px;"><source src="audios/EmotionalControl/happy-1/kaixin_A0038_S0006_0_G0075_G0076_335_48.wav"></audio></td>
         </tr>
 
         <tr>
-          <td>刚刚买到一只老新鲜个河鲫鱼，烧汤肯定鲜得眉毛落脱！</td>
-          <td class="text-center"><audio controls style="width:150px;"><source src="audios/emotion/happy_2_sft.wav"></audio></td>
-          <td class="text-center"><audio controls style="width:150px;"><source src="audios/emotion/happy_2_instruct.wav"></audio></td>
+          <td class="text-cell">刚刚买到一只老新鲜个河鲫鱼，烧汤肯定鲜得眉毛落脱！</td>
+          <td class="text-center"><audio controls style="width:150px;"><source src="audios/EmotionalControl/happy-2/baseline_kaixin_A0002_S0003_0_G0003_G0004_446_2.wav"></audio></td>
+          <td class="text-center"><audio controls style="width:150px;"><source src="audios/EmotionalControl/happy-2/kaixin_A0002_S0003_0_G0003_G0004_446_2.wav"></audio></td>
         </tr>
 
         <tr>
-          <td>今朝天气蛮好，太阳晒得暖烘烘，出去走走真适意！</td>
-          <td class="text-center"><audio controls style="width:150px;"><source src="audios/emotion/happy_3_sft.wav"></audio></td>
-          <td class="text-center"><audio controls style="width:150px;"><source src="audios/emotion/happy_3_instruct.wav"></audio></td>
+          <td class="text-cell">今朝天气蛮好，太阳晒得暖烘烘，出去走走真适意！</td>
+          <td class="text-center"><audio controls style="width:150px;"><source src="audios/EmotionalControl/happy-3/baseline_kaixin_A0002_S0003_0_G0003_G0004_338_0.wav"></audio></td>
+          <td class="text-center"><audio controls style="width:150px;"><source src="audios/EmotionalControl/happy-3/kaixin_A0002_S0003_0_G0003_G0004_338_0.wav"></audio></td>
         </tr>
 
         <tr>
-          <td rowspan="3" class="text-center fw-bold">愤怒</td>
-          <td rowspan="3">用愤怒的情感说</td>
-          <td>搿只手机新买个呀，用了三天就死机，搿种质量真个要气煞人！</td>
-          <td class="text-center"><audio controls style="width:150px;"><source src="audios/emotion/angry_1_sft.wav"></audio></td>
-          <td class="text-center"><audio controls style="width:150px;"><source src="audios/emotion/angry_1_instruct.wav"></audio></td>
+          <td rowspan="3" class="group-type">愤怒</td>
+          <td rowspan="3" class="group-inst">用愤怒的情感说</td>
+          <td class="text-cell">搿只手机新买个呀，用了三天就死机，搿种质量真个要气煞人！</td>
+          <td class="text-center"><audio controls style="width:150px;"><source src="audios/EmotionalControl/angry-1/baseline_fennv_A0002_S0003_0_G0003_G0004_338_4.wav"></audio></td>
+          <td class="text-center"><audio controls style="width:150px;"><source src="audios/EmotionalControl/angry-1/fennv_A0002_S0003_0_G0003_G0004_338_4.wav"></audio></td>
         </tr>
 
         <tr>
-          <td>我勒电话里讲得清清爽爽，结果还是送错地方，耳朵听啥个？</td>
-          <td class="text-center"><audio controls style="width:150px;"><source src="audios/emotion/angry_2_sft.wav"></audio></td>
-          <td class="text-center"><audio controls style="width:150px;"><source src="audios/emotion/angry_2_instruct.wav"></audio></td>
+          <td class="text-cell">我勒电话里讲得清清爽爽，结果还是送错地方，耳朵听啥个？</td>
+          <td class="text-center"><audio controls style="width:150px;"><source src="audios/EmotionalControl/angry-2/baseline_fennv_A0002_S0003_0_G0003_G0004_338_35.wav"></audio></td>
+          <td class="text-center"><audio controls style="width:150px;"><source src="audios/EmotionalControl/angry-2/fennv_A0002_S0003_0_G0003_G0004_338_35.wav"></audio></td>
         </tr>
 
         <tr>
-          <td>讲好八点钟到，现在九点半了，连只电话也勿打，侬当我戆大啊？</td>
-          <td class="text-center"><audio controls style="width:150px;"><source src="audios/emotion/angry_3_sft.wav"></audio></td>
-          <td class="text-center"><audio controls style="width:150px;"><source src="audios/emotion/angry_3_instruct.wav"></audio></td>
+          <td class="text-cell">讲好八点钟到，现在九点半了，连只电话也勿打，侬当我戆大啊？</td>
+          <td class="text-center"><audio controls style="width:150px;"><source src="audios/EmotionalControl/angry-3/baseline_fennv_A0009_S0005_0_G0017_G0018_9_3.wav"></audio></td>
+          <td class="text-center"><audio controls style="width:150px;"><source src="audios/EmotionalControl/angry-3/fennv_A0009_S0005_0_G0017_G0018_9_3.wav"></audio></td>
         </tr>
 
         <tr>
-          <td rowspan="3" class="text-center fw-bold">悲伤</td>
-          <td rowspan="3">用悲伤的情感说</td>
-          <td>今朝落班辰光落雨，伞也忘记带，衣裳侪湿脱了，真个是触霉头。</td>
-          <td class="text-center"><audio controls style="width:150px;"><source src="audios/emotion/sad_1_sft.wav"></audio></td>
-          <td class="text-center"><audio controls style="width:150px;"><source src="audios/emotion/sad_1_instruct.wav"></audio></td>
+          <td rowspan="3" class="group-type">悲伤</td>
+          <td rowspan="3" class="group-inst">用悲伤的情感说</td>
+          <td class="text-cell">今朝落班辰光落雨，伞也忘记带，衣裳侪湿脱了，真个是触霉头。</td>
+          <td class="text-center"><audio controls style="width:150px;"><source src="audios/EmotionalControl/sad-1/baseline_beishang_A0002_S0003_0_G0003_G0004_338_0.wav"></audio></td>
+          <td class="text-center"><audio controls style="width:150px;"><source src="audios/EmotionalControl/sad-1/beishang_A0002_S0003_0_G0003_G0004_338_0.wav"></audio></td>
         </tr>
 
         <tr>
-          <td>本来讲好一道去旅游个，结果伊临时有事体去勿成，只好自家一个人去。</td>
-          <td class="text-center"><audio controls style="width:150px;"><source src="audios/emotion/sad_2_sft.wav"></audio></td>
-          <td class="text-center"><audio controls style="width:150px;"><source src="audios/emotion/sad_2_instruct.wav"></audio></td>
+          <td class="text-cell">本来讲好一道去旅游个，结果伊临时有事体去勿成，只好自家一个人去。</td>
+          <td class="text-center"><audio controls style="width:150px;"><source src="audios/EmotionalControl/sad-2/baseline_beishang_A0009_S0005_0_G0017_G0018_9_3.wav"></audio></td>
+          <td class="text-center"><audio controls style="width:150px;"><source src="audios/EmotionalControl/sad-2/beishang_A0009_S0005_0_G0017_G0018_9_3.wav"></audio></td>
         </tr>
 
         <tr>
-          <td>答应爷娘带伊拉去北京，一直没辰光，现在伊拉走勿动了。</td>
-          <td class="text-center"><audio controls style="width:150px;"><source src="audios/emotion/sad_3_sft.wav"></audio></td>
-          <td class="text-center"><audio controls style="width:150px;"><source src="audios/emotion/sad_3_instruct.wav"></audio></td>
+          <td class="text-cell">答应爷娘带伊拉去北京，一直没辰光，现在伊拉走勿动了。</td>
+          <td class="text-center"><audio controls style="width:150px;"><source src="audios/EmotionalControl/sad-3/baseline_beishang_A0009_S0005_0_G0017_G0018_9_30.wav"></audio></td>
+          <td class="text-center"><audio controls style="width:150px;"><source src="audios/EmotionalControl/sad-3/beishang_A0009_S0005_0_G0017_G0018_9_30.wav"></audio></td>
         </tr>
-
       </tbody>
     </table>
   </div>
