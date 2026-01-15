@@ -47,7 +47,8 @@
       <ul>
         <li><a href="#Datapipline-Overview">Datapipline Overview</a></li>
 		<!-- <li><a href="#Demo Video">Demo Video</a></li> -->
-        <li><a href="#TTS Results on WenetSpeech-Wu-Bench">TTS results on WenetSpeech-Wu-Bench</a></li>
+		 <li><a href="#ASR-Leaderboard">ASR Leaderboard</a></li>
+        <li><a href="#TTS-Evaluation">TTS Evaluation</a></li>
 		<li><a href="#TTS">TTS</a></li>
 		<li><a href="#Instruct-TTS">Instruct TTS</a></li>
       </ul>
@@ -204,7 +205,149 @@
 </style>
 
 <div class="table-responsive">
-<h2 id="TTS results on WenetSpeech-Wu-Bench" style="text-align:center;">TTS results on WenetSpeech-Wu-Bench</h2>
+<h2 id="ASR-Leaderboard" style="text-align:center;">ASR Leaderboard</h2>
+
+<table class="table table-bordered table-sm align-middle text-center">
+  <caption style="caption-side: bottom; text-align: left; padding-top: 8px;">
+    ASR results (CER %) on various test sets.
+    <span style="background-color: rgba(200,200,200,0.4); padding: 2px 6px;">gray</span>,
+    <span style="background-color: rgba(255,182,193,0.45); padding: 2px 6px;">red</span>,
+    <span style="background-color: rgba(144,238,144,0.35); padding: 2px 6px;">light green</span>,
+    and
+    <span style="background-color: rgba(0,128,0,0.25); padding: 2px 6px;">dark green</span>
+    rows denote open-source baselines, commercial models, ASR models trained on WenetSpeech-Wu,
+    and annotation models trained on in-house data, respectively.
+    <strong>Bold</strong> numbers indicate best results;
+    <u>underlined</u> numbers indicate second-best results.
+  </caption>
+
+  <thead>
+    <tr>
+      <th rowspan="2">Category</th>
+      <th rowspan="2">Model</th>
+      <th colspan="2">In-House</th>
+      <th>WS-Wu-Bench</th>
+    </tr>
+    <tr>
+      <th>Dialogue CER (%) ↓</th>
+      <th>Reading CER (%) ↓</th>
+      <th>ASR CER (%) ↓</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <!-- ASR Models -->
+    <tr>
+      <td rowspan="11" style="font-weight:bold; background-color:#fafafa;">
+        ASR Models
+      </td>
+      <td style="background-color: rgba(200,200,200,0.4);">Paraformer</td>
+      <td style="background-color: rgba(200,200,200,0.4);">63.13</td>
+      <td style="background-color: rgba(200,200,200,0.4);">66.85</td>
+      <td style="background-color: rgba(200,200,200,0.4);">64.92</td>
+    </tr>
+
+    <tr style="background-color: rgba(200,200,200,0.4);">
+      <td>SenseVoice-small</td>
+      <td>29.20</td>
+      <td>31.00</td>
+      <td>46.85</td>
+    </tr>
+    <tr style="background-color: rgba(200,200,200,0.4);">
+      <td>Whisper-medium</td>
+      <td>79.31</td>
+      <td>83.94</td>
+      <td>78.24</td>
+    </tr>
+    <tr style="background-color: rgba(200,200,200,0.4);">
+      <td>FireRedASR-AED-L</td>
+      <td>51.34</td>
+      <td>59.92</td>
+      <td>56.69</td>
+    </tr>
+    <tr style="background-color: rgba(200,200,200,0.4);">
+      <td>Step-Audio2-mini</td>
+      <td>24.27</td>
+      <td>24.01</td>
+      <td>26.72</td>
+    </tr>
+
+    <tr style="background-color: rgba(255,182,193,0.45);">
+      <td>Qwen3-ASR</td>
+      <td>23.96</td>
+      <td>24.13</td>
+      <td>29.31</td>
+    </tr>
+    <tr style="background-color: rgba(255,182,193,0.45);">
+      <td>Tencent-Cloud-ASR</td>
+      <td>23.25</td>
+      <td>25.26</td>
+      <td>29.48</td>
+    </tr>
+    <tr style="background-color: rgba(255,182,193,0.45);">
+      <td>Gemini-2.5-pro</td>
+      <td>85.50</td>
+      <td>84.67</td>
+      <td>89.99</td>
+    </tr>
+
+    <tr style="background-color: rgba(144,238,144,0.35);">
+      <td>Conformer-U2pp-Wu</td>
+      <td>15.20</td>
+      <td>12.24</td>
+      <td>15.14</td>
+    </tr>
+    <tr style="background-color: rgba(144,238,144,0.35);">
+      <td>Whisper-medium-Wu</td>
+      <td>14.19</td>
+      <td>11.09</td>
+      <td><u>14.33</u></td>
+    </tr>
+    <tr style="background-color: rgba(144,238,144,0.35);">
+      <td>Step-Audio2-Wu-ASR</td>
+      <td><u>8.68</u></td>
+      <td>7.86</td>
+      <td><strong>12.85</strong></td>
+    </tr>
+
+    <!-- Annotation Models -->
+    <tr>
+      <td rowspan="4" style="font-weight:bold; background-color:#fafafa;">
+        Annotation Models
+      </td>
+      <td style="background-color: rgba(200,200,200,0.4);">Dolphin-small</td>
+      <td style="background-color: rgba(200,200,200,0.4);">24.78</td>
+      <td style="background-color: rgba(200,200,200,0.4);">27.29</td>
+      <td style="background-color: rgba(200,200,200,0.4);">26.93</td>
+    </tr>
+
+    <tr style="background-color: rgba(255,182,193,0.45);">
+      <td>TeleASR</td>
+      <td>29.07</td>
+      <td>21.18</td>
+      <td>30.81</td>
+    </tr>
+
+    <tr style="background-color: rgba(0,128,0,0.25);">
+      <td>Step-Audio2-FT</td>
+      <td><strong>8.02</strong></td>
+      <td><strong>6.14</strong></td>
+      <td>15.64</td>
+    </tr>
+
+    <tr style="background-color: rgba(0,128,0,0.25);">
+      <td>Tele-CTC-FT</td>
+      <td>11.90</td>
+      <td><u>7.23</u></td>
+      <td>23.85</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+
+<div class="table-responsive">
+<h2 id="TTS Evaluation" style="text-align:center;">TTS Evaluation</h2>
   <table class="table table-bordered table-sm align-middle text-center">
     <caption style="caption-side: bottom; text-align: left; padding-top: 8px;">
       TTS results on WenetSpeech-Wu-Bench.
